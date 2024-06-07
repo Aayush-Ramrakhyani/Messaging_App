@@ -5,6 +5,7 @@ import 'package:my_project1/loginscreen.dart';
 import 'package:my_project1/myfriends.dart';
 import 'package:my_project1/profilescreen.dart';
 
+// ignore: must_be_immutable
 class AccountScreen extends StatefulWidget {
   User? user;
   AccountScreen({required this.user});

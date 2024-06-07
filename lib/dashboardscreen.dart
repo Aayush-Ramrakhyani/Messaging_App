@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:my_project1/MessageScreen.dart';
 import 'package:my_project1/accountscreen.dart';
 import 'package:my_project1/addfriends.dart';
 import 'package:my_project1/homescreen.dart';
 import 'package:my_project1/postscreen.dart';
 
+// ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
   User? user;
   Dashboard({super.key, required this.user});
@@ -48,6 +50,18 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Colors.deepPurple[400],
         foregroundColor: Colors.white,
         elevation: 20,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.message, color: Colors.white),
+            onPressed: () {
+              
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MessgaeScreenPage(user: widget.user)),
+              );
+            },
+          ),
+        ],
       ),
       body: PageView(
         controller: _pageController,

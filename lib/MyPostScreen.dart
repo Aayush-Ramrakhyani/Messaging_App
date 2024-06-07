@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:my_project1/dashboardscreen.dart';
 import 'package:my_project1/postscreen.dart';
 
+// ignore: must_be_immutable
 class MyAllPostScreen extends StatefulWidget {
   User? user;
   MyAllPostScreen({required this.user});

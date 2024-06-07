@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_project1/dashboardscreen.dart';
 
+// ignore: must_be_immutable
 class MyPostScreen extends StatefulWidget {
   User? user;
   String? document1;

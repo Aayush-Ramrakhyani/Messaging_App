@@ -4,8 +4,9 @@ import "package:flutter/material.dart";
 import "package:my_project1/Custom_Widget/mycustombutton.dart";
 import "package:my_project1/Custom_Widget/textfield.dart";
 import "package:my_project1/dashboardscreen.dart";
-import "package:my_project1/loginscreen.dart";
 
+
+// ignore: must_be_immutable
 class MyProfileScreen extends StatefulWidget {
   User? user;
   MyProfileScreen({required this.user});
