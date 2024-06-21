@@ -14,7 +14,7 @@ class MessgaeScreenPage extends StatefulWidget {
 
 class _MessgaeScreenPageScreenState extends State<MessgaeScreenPage> {
   String? logged_username;
-
+  String? logged_id;
   String? documnet_id;
   List<String> documentIds = [];
   void initState() {
@@ -30,6 +30,7 @@ class _MessgaeScreenPageScreenState extends State<MessgaeScreenPage> {
 
     setState(() {
       logged_username = document["name"];
+      logged_id = document["uid"];
     });
   }
 
@@ -118,7 +119,7 @@ class _MessgaeScreenPageScreenState extends State<MessgaeScreenPage> {
                       margin: EdgeInsets.all(5),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(friendId: userData["uid"] , friendName: userData["name"],)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(friendId: userData["uid"] , friendName: userData["name"], myId: logged_id! , myName: logged_username!,)));
                         },
                         child: ListTile(
                           leading: CircleAvatar(
