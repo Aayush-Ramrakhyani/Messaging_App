@@ -112,7 +112,7 @@ flutter run
 
 ## 📄 License
 
-This project was built as part of an internship at **TOPS Tech**. All rights reserved.
+This project was built as part of an internship at **TOPS Technology**. All rights reserved.
 
 ---
 
