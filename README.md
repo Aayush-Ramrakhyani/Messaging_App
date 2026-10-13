@@ -1,119 +1,83 @@
-# 💬 Vibe — Social & Messaging App
+# Vibe — Social & Messaging App
 
-A Flutter social media app powered by **Firebase**. Share posts, connect with friends, and chat in real time — all in one place.
+> Share moments. Chat in real time. Stay connected.
 
----
-
-## ✨ Features
-
-### 🏠 Home Feed
-- Live post feed with photos and captions
-- Profile picture and username displayed per post
-- Real-time updates via Firestore streams
-
-### 👥 Friends
-- Search and add friends
-- View your friends list
-- Start a chat directly from a friend's profile
-
-### 💬 Messaging
-- Real-time 1-on-1 chat using Firestore
-- Conversation list sorted by latest message
-- Timestamp displayed per message
-- Start new conversations via floating button
-
-### 📸 Posts
-- Upload photos from gallery using image picker
-- Add captions to posts
-- Posts stored in Firebase Storage + Firestore
-
-### 👤 Account & Profile
-- View and manage your profile
-- Profile picture upload
-- View your own posts
-
-### 🔔 Notifications
-- Push notifications via **Firebase Cloud Messaging**
-- Local notification support
-
-### 🔐 Authentication
-- Email/password login & registration
-- Forgot password flow
-- Persistent session with shared preferences
+Vibe is a full-featured social app where users can post photos, message friends one-on-one, and build their social circle — all backed by Firebase for real-time sync and push notifications.
 
 ---
 
-## 🛠️ Tech Stack
+## Features
+
+**Home Feed**
+- Scrollable live feed of photo posts from people you follow
+- Each post shows the author's profile picture, username, photo, and caption
+- Updates in real time via Firestore streams — no refresh needed
+
+**Messaging**
+- Real-time 1-on-1 chat with friends
+- Conversations list sorted by latest message with timestamps
+- Start a new chat from the friend list with one tap
+
+**Friends**
+- Search and send friend requests
+- View and manage your friends list
+- Jump into a chat directly from a friend's profile
+
+**Posts**
+- Pick a photo from your gallery and add a caption
+- Posts go live instantly on the feed
+- View all your own posts from your profile
+
+**Profile & Account**
+- Upload and update your profile picture
+- Manage your account details
+- View your post history
+
+**Notifications**
+- Push notifications via Firebase Cloud Messaging
+- Get notified for new messages even when the app is closed
+
+**Authentication**
+- Email & password sign up / login
+- Forgot password via email reset
+- Session persisted across app restarts
+
+---
+
+## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|------------|
 | Framework | Flutter · Dart |
-| Auth | Firebase Authentication |
+| Authentication | Firebase Auth |
 | Database | Cloud Firestore |
-| Storage | Firebase Storage |
-| Notifications | Firebase Cloud Messaging · flutter_local_notifications |
+| File Storage | Firebase Storage |
+| Push Notifications | Firebase Cloud Messaging · flutter_local_notifications |
 | UI | Material Design · Curved Navigation Bar |
 | Media | image_picker |
-| Utils | intl · shared_preferences |
+| Utilities | intl · shared_preferences |
 
 ---
 
-## 📁 Project Structure
+## Getting Started
 
-```
-lib/
-├── main.dart                  # App entry · Firebase init
-├── firebase_options.dart      # Firebase config
-├── loginscreen.dart           # Login page
-├── registerscreen.dart        # Registration page
-├── forgotpassword_screen.dart # Forgot password
-├── dashboardscreen.dart       # Main shell · bottom nav
-├── homescreen.dart            # Social feed
-├── addfriends.dart            # Friend discovery
-├── myfriends.dart             # Friends list
-├── FriendListScreen.dart      # Select friend to chat
-├── postscreen.dart            # Create a post
-├── MyPostScreen.dart          # View your own posts
-├── MessageScreen.dart         # Conversations list
-├── ChatScreen.dart            # 1-on-1 chat screen
-├── profilescreen.dart         # User profile
-├── accountscreen.dart         # Account settings
-└── Custom_Widget/
-    ├── colorfiles.dart        # App color constants
-    ├── mycustombutton.dart    # Reusable button
-    └── textfield.dart         # Reusable text field
-```
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
+**Prerequisites**
 - Flutter SDK `>=3.4.3`
-- A Firebase project with **Authentication**, **Firestore**, **Storage**, and **Cloud Messaging** enabled
+- Firebase project with Auth, Firestore, Storage, and Cloud Messaging enabled
 
-### Setup
+**Run locally**
 
 ```bash
-# Clone the repository
 git clone https://github.com/Aayush-Ramrakhyani/Messaging_App.git
 cd Messaging_App
-
-# Install dependencies
 flutter pub get
-
-# Run the app
 flutter run
 ```
 
-> Add your own `google-services.json` (Android) and `GoogleService-Info.plist` (iOS) from your Firebase console.
+> Replace `google-services.json` (Android) and `GoogleService-Info.plist` (iOS) with your own Firebase config files.
 
 ---
 
 ## 📄 License
 
 This project was built as part of an internship at **TOPS Technology**. All rights reserved.
-
----
-
-*Built with Flutter & Firebase · Real-time · Cross-platform*
