@@ -4,6 +4,7 @@
 
 Vibe is a full-featured social app where users can post photos, message friends one-on-one, and build their social circle — all backed by Firebase for real-time sync and push notifications.
 
+Built for TOPS Technologys as part of a internship contract (Apr 2024).
 ---
 
 ## Features
