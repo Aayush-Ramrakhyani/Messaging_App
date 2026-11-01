@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_project1/Custom_Widget/colorfiles.dart';
+import 'package:my_project1/Custom_Widget/app_colors.dart';
 import 'package:my_project1/Custom_Widget/mycustombutton.dart';
 import 'package:my_project1/Custom_Widget/textfield.dart';
 import 'package:my_project1/loginscreen.dart';
@@ -18,137 +20,275 @@ class MyRegistrationScreen extends StatefulWidget {
 }
 
 class _MyRegistrationScreenState extends State<MyRegistrationScreen> {
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  ImagePicker _picker = ImagePicker();
-  var d_imageURL = "https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small_2x/default-avatar-profile-icon-of-social-media-user-vector.jpg";
-  //var document;
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _picker = ImagePicker();
+
+  static const String _defaultAvatar =
+      'https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small_2x/default-avatar-profile-icon-of-social-media-user-vector.jpg';
+
   File? _pic;
-  bool _imageSelected = false;
-  Future<void> registerUser() async {
-    UserCredential userCredential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-            email: _emailController.text.toString(),
-            password: _passwordController.text.toString());
+  bool _isLoading = false;
 
-    User? user = userCredential.user;
-    if (_pic != null) {
-      final _storage = await FirebaseStorage.instance;
-      final _ref =
-          _storage.ref().child("users").child(DateTime.now().toString());
-      final uploadImage = _ref.putFile(_pic!);
-      final snapshot = await uploadImage.whenComplete(() => null);
-      // var dowurl = await snapshot._ref.getDownloadURL();
-      d_imageURL = await snapshot.ref.getDownloadURL();
-    }
-    await FirebaseFirestore.instance.collection("Users").doc(user!.uid).set({
-        "uid": user.uid,
-        "name": _usernameController.text.toString(),
-        "email": _emailController.text.toString(),
-        "profilepic": d_imageURL,
-      });
-
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MYLoginScreen(),
-          ));
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
-  void selectPic() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _pic = File(pickedFile.path);
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: AppColors.error,
+      content: Text(msg, style: const TextStyle(color: Colors.white)),
+      duration: const Duration(seconds: 3),
+    ));
+  }
+
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    User? createdUser;
+
+    try {
+      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      createdUser = cred.user;
+
+      String imageURL = _defaultAvatar;
+      if (_pic != null) {
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('users')
+            .child(createdUser!.uid);
+        await ref.putFile(_pic!);
+        imageURL = await ref.getDownloadURL();
+      }
+
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(createdUser!.uid)
+          .set({
+        'uid': createdUser.uid,
+        'name': _usernameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'profilepic': imageURL,
       });
+
+      if (!mounted) return;
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (_) => const MYLoginScreen()));
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      _showError(e.code == 'email-already-in-use'
+          ? 'An account with this email already exists.'
+          : e.code == 'network-request-failed'
+              ? 'No internet connection.'
+              : 'Registration failed. Please try again.');
+    } catch (_) {
+      // Roll back the Auth account if Firestore write or Storage upload fails,
+      // so the user isn't left with a partially-created account they can't log into.
+      await createdUser?.delete();
+      if (!mounted) return;
+      _showError('Registration failed. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _selectPic() async {
+    final picked = await _picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) setState(() => _pic = File(picked.path));
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-        body: Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-            Color.fromARGB(255, 84, 10, 97),
-            Color.fromARGB(255, 220, 210, 231),
-            Color.fromARGB(255, 47, 9, 65),
-          ])),
-      child: Padding(
-        padding: EdgeInsets.only(left: 16, right: 16),
-        child: Center(
-          child: Container(
-            height: 550,
-            child: Card(
-              color: Color.fromRGBO(156, 131, 168, 0.498),
-              elevation: 20,
+      body: SizedBox(
+        height: size.height,
+        width: size.width,
+        child: Stack(
+          children: [
+            Container(
+              height: size.height * 0.38,
+              decoration: const BoxDecoration(
+                  gradient: AppColors.primaryGradient),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: size.height * 0.65,
+              child: Container(color: Colors.white),
+            ),
+            SafeArea(
               child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Text(
-                        "Create An Account",
-                        style: TextStyle(fontSize: 36, color: Colors.white),
+                    SizedBox(height: size.height * 0.04),
+                    Text(
+                      'Create Account',
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
                       ),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    GestureDetector(
-                      onTap: selectPic,
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.grey[300],
-                        backgroundImage:
-                            _imageSelected ? FileImage(_pic!) : null,
-                        child: !_imageSelected
-                            ? Icon(
-                                Icons.camera_alt,
-                                size: 40,
-                                color: Colors.grey[600],
-                              )
-                            : null,
+                    ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.3),
+                    Text(
+                      'Join the Vibe community',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
-                    ),
-                    MyTextFieldWidget(_usernameController, "Username"),
-                    MyTextFieldWidget(_emailController, "Email"),
-                    MyTextFieldWidget(_passwordController, "Password"),
+                    ).animate().fadeIn(delay: 200.ms),
+                    const SizedBox(height: 20),
+
+                    // ── Avatar picker ──────────────────────────────────
                     GestureDetector(
-                        onTap: () {
-                          registerUser();
-                        },
-                        child: MyCustomButton("SIGN UP")),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MYLoginScreen(),
-                                ));
-                          },
-                          child: Text(
-                            "Already User ? Click Here for Login",
-                            style: TextStyle(
-                                color: DISPLAY_TEXT_COLOR,
-                                fontWeight: FontWeight.bold),
-                          )),
-                    ),
+                      onTap: _selectPic,
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: Colors.white, width: 3),
+                              boxShadow: AppColors.cardShadow,
+                            ),
+                            child: CircleAvatar(
+                              radius: 44,
+                              backgroundColor: Colors.white.withValues(alpha: 0.2),
+                              backgroundImage:
+                                  _pic != null ? FileImage(_pic!) : null,
+                              child: _pic == null
+                                  ? const Icon(Icons.person,
+                                      size: 44, color: Colors.white)
+                                  : null,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.camera_alt,
+                                  size: 16,
+                                  color: AppColors.gradientEnd),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ).animate().scale(
+                          duration: 400.ms,
+                          curve: Curves.elasticOut,
+                          begin: const Offset(0.5, 0.5),
+                          delay: 150.ms,
+                        ),
+
+                    const SizedBox(height: 24),
+
+                    // ── Card ───────────────────────────────────────────
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(28),
+                        boxShadow: AppColors.cardShadow,
+                      ),
+                      padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            AppTextField(
+                              controller: _usernameController,
+                              hintText: 'Username',
+                              prefixIcon: Icons.person_outlined,
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Enter a username'
+                                  : null,
+                            ),
+                            const SizedBox(height: 14),
+                            AppTextField(
+                              controller: _emailController,
+                              hintText: 'Email address',
+                              prefixIcon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Enter your email'
+                                  : null,
+                            ),
+                            const SizedBox(height: 14),
+                            AppTextField(
+                              controller: _passwordController,
+                              hintText: 'Password',
+                              prefixIcon: Icons.lock_outlined,
+                              isPassword: true,
+                              validator: (v) =>
+                                  (v == null || v.length < 6)
+                                      ? 'Minimum 6 characters'
+                                      : null,
+                            ),
+                            const SizedBox(height: 24),
+                            GradientButton(
+                              text: 'Sign Up',
+                              onPressed: _isLoading ? null : _register,
+                              isLoading: _isLoading,
+                            ),
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Already have an account? ',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      color: AppColors.textSecondary),
+                                ),
+                                GestureDetector(
+                                  onTap: () => Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            const MYLoginScreen()),
+                                  ),
+                                  child: Text(
+                                    'Log In',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.gradientEnd,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.12),
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
-    ));
+    );
   }
 }

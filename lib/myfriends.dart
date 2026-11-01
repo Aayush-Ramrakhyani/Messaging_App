@@ -1,184 +1,248 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:my_project1/Custom_Widget/app_colors.dart';
 import 'package:my_project1/dashboardscreen.dart';
 
 class MyFRIENDS extends StatefulWidget {
   final User? user;
+  const MyFRIENDS({super.key, required this.user});
 
-  MyFRIENDS({required this.user});
-
+  @override
   State<MyFRIENDS> createState() => _MyFRIENDSScreenState();
 }
 
 class _MyFRIENDSScreenState extends State<MyFRIENDS> {
-  String? logged_username;
-  var querySnapshot;
-  String? documnet_id;
-  List<String> documentIds = [];
+  String? _loggedUsername;
+
+  @override
   void initState() {
     super.initState();
-    getData();
+    _loadUsername();
   }
 
-  Future<void> getData() async {
-    var document = await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(widget.user!.uid)
-        .get();
-
-    setState(() {
-      logged_username = document["name"];
-    });
+  Future<void> _loadUsername() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(widget.user!.uid)
+          .get();
+      if (!mounted) return;
+      setState(() => _loggedUsername = doc.data()?['name'] as String?);
+    } catch (_) {}
   }
 
-  Future<bool> isFriendRequestAdded(String? receiverId) async {
-    querySnapshot = await FirebaseFirestore.instance
-        .collection("Friends")
-        .where("receiver_id", isEqualTo: widget.user!.uid)
-        .where("request_id", isEqualTo: receiverId)
-        .where("status", isEqualTo: "pending")
+  Future<bool> _hasPendingRequest(String senderId) async {
+    final snap = await FirebaseFirestore.instance
+        .collection('Friends')
+        .where('receiver_id', isEqualTo: widget.user!.uid)
+        .where('request_id', isEqualTo: senderId)
+        .where('status', isEqualTo: 'pending')
         .get();
-
-   
-    return querySnapshot.docs.isNotEmpty;
+    return snap.docs.isNotEmpty;
   }
 
-  Future<void> AddFriends(String? status1, String? receiverId) async {
-    querySnapshot = await FirebaseFirestore.instance
-        .collection("Friends")
-        .where("receiver_id", isEqualTo: widget.user!.uid)
-        .where("request_id", isEqualTo: receiverId)
+  Future<void> _respondToRequest(String senderId, String status) async {
+    final snap = await FirebaseFirestore.instance
+        .collection('Friends')
+        .where('receiver_id', isEqualTo: widget.user!.uid)
+        .where('request_id', isEqualTo: senderId)
         .get();
 
-    querySnapshot.docs.forEach((doc) {
-      documnet_id = doc.id;
-    });
-    await FirebaseFirestore.instance
-        .collection("Friends")
-        .doc(documnet_id)
-        .update({
-      "status": status1,
-    });
-  }
-
-  Future<void> DeleteFriends(String? status1, String? receiverId) async {
-    querySnapshot = await FirebaseFirestore.instance
-        .collection("Friends")
-        .where("receiver_id", isEqualTo: widget.user!.uid)
-        .where("request_id", isEqualTo: receiverId)
-        .get();
-
-    querySnapshot.docs.forEach((doc) {
-      documnet_id = doc.id;
-    });
-    DocumentReference documentReference =
-        FirebaseFirestore.instance.collection("Friends").doc(documnet_id);
-    await documentReference.delete();
+    for (final doc in snap.docs) {
+      if (status == 'accepted') {
+        await doc.reference.update({'status': status});
+      } else {
+        await doc.reference.delete();
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                      builder: (context) => Dashboard(user: widget.user)),
-                  (Route<dynamic> route) => false);
-            },
-            icon: Icon(Icons.home)),
-        // centerTitle: true,
-        title: Text('Hi, $logged_username'),
-        backgroundColor: Colors.deepPurple[400],
-        foregroundColor: Colors.white,
-        elevation: 20,
-      ),
-      backgroundColor: Color.fromARGB(255, 177, 162, 205),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection("Users").snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-          if (!snapshot.hasData) {
-            return Center(
-              child: Text('No users found'),
-            );
-          }
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Gradient header
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+                gradient: AppColors.primaryGradient),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding:
+                    const EdgeInsets.fromLTRB(8, 8, 16, 16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new,
+                          color: Colors.white),
+                      onPressed: () =>
+                          Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                Dashboard(user: widget.user)),
+                        (r) => false,
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Friend Requests',
+                            style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white)),
+                        if (_loggedUsername != null)
+                          Text('Hi, $_loggedUsername',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: Colors.white.withValues(
+                                      alpha: 0.75))),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
 
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              DocumentSnapshot document = snapshot.data!.docs[index];
-              Map<String, dynamic> userData =
-                  document.data() as Map<String, dynamic>;
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('Users')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                      child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData) {
+                  return Center(
+                      child: Text('No users found',
+                          style: GoogleFonts.poppins()));
+                }
 
-              if (document.id == widget.user!.uid) {
-                return SizedBox();
-              }
+                final docs = snapshot.data!.docs
+                    .where((d) => d.id != widget.user!.uid)
+                    .toList();
 
-              return FutureBuilder<bool>(
-                future: isFriendRequestAdded(userData["uid"]),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final userData =
+                        docs[index].data() as Map<String, dynamic>;
+                    final profilePic =
+                        userData['profilepic'] as String? ?? '';
+                    final name = userData['name'] as String? ?? '';
+                    final email = userData['email'] as String? ?? '';
+                    final uid = userData['uid'] as String? ?? '';
 
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
+                    return FutureBuilder<bool>(
+                      future: _hasPendingRequest(uid),
+                      builder: (context, snap) {
+                        if (snap.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox.shrink();
+                        }
+                        if (snap.data != true) {
+                          return const SizedBox.shrink();
+                        }
 
-                  if (snapshot.data == true) {
-                    return Card(
-                      margin: EdgeInsets.all(5),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          child: SizedBox(
-                            width: 80,
-                            height: 80,
-                            child: ClipOval(
-                              child: Image.network(userData["profilepic"]),
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.cardDark
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: AppColors.cardShadow,
+                          ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.fromLTRB(
+                                12, 6, 12, 6),
+                            leading: CircleAvatar(
+                              radius: 24,
+                              backgroundImage: profilePic.isNotEmpty
+                                  ? NetworkImage(profilePic)
+                                  : null,
+                              child: profilePic.isEmpty
+                                  ? const Icon(Icons.person)
+                                  : null,
+                            ),
+                            title: Text(name,
+                                style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14)),
+                            subtitle: Text(email,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Accept
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.success,
+                                    borderRadius:
+                                        BorderRadius.circular(10),
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                        Icons.check_circle_outline,
+                                        color: Colors.white,
+                                        size: 20),
+                                    onPressed: () => _respondToRequest(
+                                        uid, 'accepted'),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                // Decline
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.error,
+                                    borderRadius:
+                                        BorderRadius.circular(10),
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                        Icons.cancel_outlined,
+                                        color: Colors.white,
+                                        size: 20),
+                                    onPressed: () => _respondToRequest(
+                                        uid, 'rejected'),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        title: Text(userData["name"]),
-                        subtitle: Text(userData["email"]),
-                        trailing: Wrap(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                AddFriends("accepted", userData["uid"]);
-                              },
-                              child: Icon(Icons.check_circle),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                DeleteFriends("rejected", userData["uid"]);
-                              },
-                              child: Icon(Icons.cancel_rounded),
-                            ),
-                          ],
-                        ),
-                      ),
+                        )
+                            .animate(
+                                delay: Duration(
+                                    milliseconds:
+                                        (index * 50).clamp(0, 400)))
+                            .fadeIn(duration: 300.ms)
+                            .slideX(begin: 0.08);
+                      },
                     );
-                  } else {
-                    return SizedBox();
-                  }
-                },
-              );
-            },
-          );
-        },
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
