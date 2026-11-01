@@ -8,6 +8,9 @@ import 'package:my_project1/Custom_Widget/textfield.dart';
 import 'package:my_project1/loginscreen.dart';
 import 'package:my_project1/registerscreen.dart';
 
+/// Password-reset screen.
+/// Sends a Firebase password-reset email and shows a success SnackBar.
+/// Provides links back to Login and Register so users aren't stranded.
 class MyForgotPasswordScreen extends StatefulWidget {
   const MyForgotPasswordScreen({super.key});
 
@@ -27,6 +30,7 @@ class _MyForgotPasswordScreenState extends State<MyForgotPasswordScreen> {
     super.dispose();
   }
 
+  /// Sends the reset email and gives visual feedback on success or failure.
   Future<void> _sendLink() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);

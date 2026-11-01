@@ -7,6 +7,9 @@ import 'package:my_project1/Custom_Widget/app_colors.dart';
 import 'package:my_project1/dashboardscreen.dart';
 import 'package:my_project1/postscreen.dart';
 
+/// Shows all posts belonging to the logged-in user.
+/// Each card has an overflow menu with Edit (opens [MyPostScreen] in edit mode)
+/// and Delete (shows confirmation dialog before removing from Firestore).
 // ignore: must_be_immutable
 class MyAllPostScreen extends StatefulWidget {
   User? user;

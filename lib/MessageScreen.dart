@@ -10,6 +10,9 @@ import 'package:my_project1/FriendListScreen.dart';
 import 'ChatScreen.dart';
 import 'dashboardscreen.dart';
 
+/// Inbox screen — lists the most-recent message per conversation.
+/// Reads the flat "chats" collection and deduplicates into one row per friend,
+/// showing online status dot, last message preview, and timestamp.
 class MessgaeScreenPage extends StatefulWidget {
   final User? user;
 

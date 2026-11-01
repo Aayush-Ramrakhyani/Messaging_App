@@ -8,6 +8,9 @@ import 'package:my_project1/Custom_Widget/app_colors.dart';
 import 'package:my_project1/commentsscreen.dart';
 import 'package:my_project1/Custom_Widget/app_routes.dart';
 
+/// Social feed — streams all posts ordered by timestamp (newest first).
+/// Shows a shimmer skeleton while loading, then staggered card animations.
+/// Each card supports: like toggle, comment count badge, full-screen image Hero.
 class MyHomeScreen extends StatefulWidget {
   const MyHomeScreen({super.key});
 

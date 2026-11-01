@@ -5,6 +5,8 @@ import 'package:my_project1/Custom_Widget/app_routes.dart';
 import 'package:my_project1/dashboardscreen.dart';
 import 'package:my_project1/loginscreen.dart';
 
+/// Animated launch screen shown for ~2.8 s before navigating.
+/// If a Firebase user session exists → Dashboard; otherwise → LoginScreen.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 

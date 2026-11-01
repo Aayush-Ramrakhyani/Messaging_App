@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
+/// Full-screen comments view for a single post.
+/// Comments are stored as a subcollection: MyPost/{postId}/comments,
+/// ordered by timestamp so they appear chronologically.
 class CommentsScreen extends StatefulWidget {
   final String postId;
   final String myId;

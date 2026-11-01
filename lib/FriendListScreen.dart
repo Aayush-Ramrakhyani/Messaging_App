@@ -5,6 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:my_project1/Custom_Widget/app_colors.dart';
 import 'ChatScreen.dart';
 
+/// Friend picker shown when starting a new chat from the Messages screen.
+/// Fetches only accepted friends (Friends collection, status = "accepted",
+/// request_id = myId) so the list is limited to real connections.
 class FriendListScreen extends StatefulWidget {
   final String myId;
   final String myName;
@@ -25,6 +28,8 @@ class _FriendListScreenState extends State<FriendListScreen> {
     _loadFriends();
   }
 
+  /// Loads accepted friend IDs once on init; the ListView then filters the
+  /// Users stream to show only those IDs.
   Future<void> _loadFriends() async {
     try {
       final userDoc = await FirebaseFirestore.instance

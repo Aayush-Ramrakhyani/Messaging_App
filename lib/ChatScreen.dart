@@ -9,6 +9,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:my_project1/Custom_Widget/app_colors.dart';
 
+/// Real-time 1-to-1 chat screen.
+/// Messages are stored in the "chats" collection with a participants array
+/// so both sides can query with arrayContains.
+/// Features: text + image messages, typing indicator, date separators.
 class ChatScreen extends StatefulWidget {
   final String friendId;
   final String friendName;
@@ -74,6 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  /// Sends a text message and writes a notification document for the receiver.
   void _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty || _isSending) return;
@@ -109,6 +114,8 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  /// Picks an image, uploads it to Storage under chat_images/, then sends
+  /// a message with type "image" and an imageUrl field instead of message.
   void _sendImage() async {
     final picked =
         await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
@@ -143,6 +150,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  /// Returns "Today", "Yesterday", or a dd/MM/yyyy string for date separators.
   String _formatDate(Timestamp timestamp) {
     final date = timestamp.toDate();
     final now = DateTime.now();

@@ -6,6 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:my_project1/Custom_Widget/app_colors.dart';
 import 'package:my_project1/dashboardscreen.dart';
 
+/// Shows incoming friend requests (status = "pending") for the logged-in user.
+/// Accept → updates document status to "accepted".
+/// Decline → deletes the document entirely so it no longer appears.
 class MyFRIENDS extends StatefulWidget {
   final User? user;
   const MyFRIENDS({super.key, required this.user});
@@ -34,6 +37,7 @@ class _MyFRIENDSScreenState extends State<MyFRIENDS> {
     } catch (_) {}
   }
 
+  /// Checks if [senderId] has sent a pending request TO the logged-in user.
   Future<bool> _hasPendingRequest(String senderId) async {
     final snap = await FirebaseFirestore.instance
         .collection('Friends')
@@ -44,6 +48,8 @@ class _MyFRIENDSScreenState extends State<MyFRIENDS> {
     return snap.docs.isNotEmpty;
   }
 
+  /// Accepts or declines a friend request.
+  /// Accepted → sets status field. Declined → deletes the document.
   Future<void> _respondToRequest(String senderId, String status) async {
     final snap = await FirebaseFirestore.instance
         .collection('Friends')

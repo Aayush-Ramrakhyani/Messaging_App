@@ -11,9 +11,13 @@ import 'package:my_project1/homescreen.dart';
 import 'package:my_project1/postscreen.dart';
 
 // ignore: must_be_immutable
+/// Main shell of the app.
+/// Hosts four pages in a PageView (Home, AddFriends, Post, Account) and
+/// uses WidgetsBindingObserver to keep the user's isOnline flag accurate
+/// whenever the app moves to background / foreground.
 class Dashboard extends StatefulWidget {
-  User? user;
-  Dashboard({super.key, required this.user});
+  final User? user;
+  const Dashboard({super.key, required this.user});
 
   @override
   State<Dashboard> createState() => _DashboardState();

@@ -10,6 +10,9 @@ import 'package:my_project1/Custom_Widget/app_colors.dart';
 import 'package:my_project1/Custom_Widget/mycustombutton.dart';
 import 'package:my_project1/dashboardscreen.dart';
 
+/// Create or edit a post.
+/// [document1] == null → create mode (new Firestore doc + timestamp + empty likes).
+/// [document1] != null → edit mode (loads existing caption/image, calls .update()).
 // ignore: must_be_immutable
 class MyPostScreen extends StatefulWidget {
   User? user;

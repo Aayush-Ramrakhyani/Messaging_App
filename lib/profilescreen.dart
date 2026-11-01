@@ -11,6 +11,9 @@ import 'package:my_project1/Custom_Widget/mycustombutton.dart';
 import 'package:my_project1/Custom_Widget/textfield.dart';
 import 'package:my_project1/dashboardscreen.dart';
 
+/// Edit profile screen — lets the user change their display name and
+/// profile picture. The avatar uses a Hero tag matching the one on the
+/// Dashboard so the transition animates smoothly.
 // ignore: must_be_immutable
 class MyProfileScreen extends StatefulWidget {
   User? user;
@@ -66,6 +69,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     if (picked != null) setState(() => _newPic = File(picked.path));
   }
 
+  /// Uploads the new picture (if any) to Storage then updates both
+  /// name and profilepic fields in the Users document atomically.
   Future<void> _updateProfile() async {
     final newName = _usernameController.text.trim();
     if (newName.isEmpty) {

@@ -12,6 +12,10 @@ import 'package:my_project1/Custom_Widget/mycustombutton.dart';
 import 'package:my_project1/Custom_Widget/textfield.dart';
 import 'package:my_project1/loginscreen.dart';
 
+/// New user registration screen.
+/// Collects username, email, password, and optional profile picture.
+/// Creates a Firebase Auth account then writes a Firestore Users document.
+/// If the Firestore write fails the Auth account is deleted (rollback).
 class MyRegistrationScreen extends StatefulWidget {
   const MyRegistrationScreen({super.key});
 
@@ -49,6 +53,7 @@ class _MyRegistrationScreenState extends State<MyRegistrationScreen> {
     ));
   }
 
+  /// Creates the account in three steps: Auth → Storage (if pic picked) → Firestore.
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 

@@ -5,6 +5,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_project1/Custom_Widget/app_colors.dart';
 
+/// Discover and add new friends.
+/// Shows all users except the logged-in user and anyone already connected
+/// (pending or accepted in either direction).
 class MyAddFriends extends StatefulWidget {
   final User? user;
   const MyAddFriends({super.key, required this.user});
@@ -33,6 +36,8 @@ class _MyAddFriendsScreenState extends State<MyAddFriends> {
     } catch (_) {}
   }
 
+  /// Checks both directions (I sent to them, or they sent to me) so neither
+  /// side can send a duplicate request.
   Future<bool> _isAlreadyConnected(String? otherId) async {
     final q1 = await FirebaseFirestore.instance
         .collection('Friends')

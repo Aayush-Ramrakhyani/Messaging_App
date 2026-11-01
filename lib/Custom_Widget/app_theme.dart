@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
+/// Material 3 theme definitions for light and dark modes.
+/// Both themes use [AppColors] so palette changes propagate automatically.
+/// Applied in main.dart via MaterialApp.theme / darkTheme / themeMode.
 class AppTheme {
   static ThemeData get light => ThemeData(
         useMaterial3: true,

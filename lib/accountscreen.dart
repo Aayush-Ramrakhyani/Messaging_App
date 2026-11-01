@@ -10,6 +10,9 @@ import 'package:my_project1/myfriends.dart';
 import 'package:my_project1/profilescreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Settings screen — profile links, dark mode toggle, logout.
+/// Dark mode is persisted to SharedPreferences and updates the global
+/// [themeModeNotifier] so the change takes effect immediately across the app.
 // ignore: must_be_immutable
 class AccountScreen extends StatefulWidget {
   User? user;

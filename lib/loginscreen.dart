@@ -9,6 +9,9 @@ import 'package:my_project1/dashboardscreen.dart';
 import 'package:my_project1/forgotpassword_screen.dart';
 import 'package:my_project1/registerscreen.dart';
 
+/// Email/password login screen.
+/// Layout: gradient top half (logo + branding) + white rounded card (form).
+/// On success navigates to [Dashboard]; errors shown as floating SnackBars.
 class MYLoginScreen extends StatefulWidget {
   const MYLoginScreen({super.key});
 
@@ -38,6 +41,8 @@ class _MYLoginScreenState extends State<MYLoginScreen> {
     ));
   }
 
+  /// Signs the user in and navigates to Dashboard.
+  /// Validates the form first so empty fields never reach Firebase.
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
