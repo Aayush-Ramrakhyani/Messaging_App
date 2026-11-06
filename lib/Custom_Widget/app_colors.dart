@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 /// Central colour palette for the Vibe app.
 /// All screens import this file — never hard-code hex values elsewhere.
 /// Primary gradient: sky-blue (#4A90D9) → deep violet (#7B2FBE).
+/// Accent: coral (#FF6B6B) used for likes and destructive actions.
 class AppColors {
   // ── Primary gradient ────────────────────────────────────────────────────
   static const Color gradientStart = Color(0xFF4A90D9); // Sky blue
