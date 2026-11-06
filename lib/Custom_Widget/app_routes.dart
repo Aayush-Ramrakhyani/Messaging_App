@@ -1,3 +1,4 @@
+// Vibe — Social & Messaging App
 import 'package:flutter/material.dart';
 
 /// Slides new screen in from the right with a subtle fade.

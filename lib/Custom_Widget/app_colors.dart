@@ -1,3 +1,4 @@
+// Vibe — Social & Messaging App
 import 'package:flutter/material.dart';
 
 /// Central colour palette for the Vibe app.

@@ -1,3 +1,4 @@
+// Vibe — Social & Messaging App
 import "package:flutter/material.dart";
 
 const Color INPUT_TEXT_COLOR = Colors.white;
