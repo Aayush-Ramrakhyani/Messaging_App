@@ -9,6 +9,7 @@ import 'package:my_project1/Custom_Widget/app_colors.dart';
 import 'package:my_project1/Custom_Widget/app_routes.dart';
 import 'package:my_project1/FriendListScreen.dart';
 import 'ChatScreen.dart';
+import 'GroupListScreen.dart';
 import 'dashboardscreen.dart';
 
 /// Inbox screen — lists the most-recent message per conversation.
@@ -94,6 +95,61 @@ class _MessgaeScreenPageScreenState extends State<MessgaeScreenPage> {
                   ],
                 ),
               ),
+            ),
+          ),
+
+          // Groups entry banner
+          GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              SlidePageRoute(
+                  page: GroupListScreen(user: widget.user)),
+            ),
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(14, 12, 14, 0),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.cardDark : Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: AppColors.cardShadow,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.group_outlined,
+                        color: Colors.white, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text('Group Chats',
+                        style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14)),
+                  ),
+                  const Icon(Icons.chevron_right,
+                      color: AppColors.textSecondary, size: 20),
+                ],
+              ),
+            ),
+          ),
+
+          Padding(
+            padding:
+                const EdgeInsets.fromLTRB(16, 14, 16, 2),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Direct Messages',
+                  style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary)),
             ),
           ),
 
