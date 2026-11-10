@@ -1,6 +1,8 @@
 // Vibe — Social & Messaging App
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:my_project1/Custom_Widget/app_theme.dart';
 import 'package:my_project1/firebase_options.dart';
@@ -18,6 +20,14 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    // Web Firestore uses IndexedDB persistence by default; if it gets into a
+    // bad state it throws INTERNAL ASSERTION FAILED. Disabling it on web
+    // prevents this entirely with no functional downside.
+    if (kIsWeb) {
+      FirebaseFirestore.instance.settings = const Settings(
+        persistenceEnabled: false,
+      );
+    }
   } catch (e) {
     runApp(_FirebaseErrorApp(error: e.toString()));
     return;
